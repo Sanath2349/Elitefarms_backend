@@ -2,7 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import productRoutes from './routes/ProductRoutes.js'
+import productRoutes from "./routes/ProductRoutes.js";
+import redoc from "redoc-express";
+import errorHandler from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 
@@ -19,7 +21,31 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is running 🚀" });
 });
 
-app.use('/api/products', productRoutes)
+// Routes
+app.use("/api/products", productRoutes);
+
+// API Docs
+app.get(
+  "/docs",
+  redoc({
+    title: "Elite Desi Farms API Docs",
+    specUrl: "/openapi.json",
+  }),
+);
+
+app.get("/openapi.json", (req, res) => {
+  res.sendFile(process.cwd() + "/openapi.json");
+});
+
+// 404 Handler (MUST come before errorHandler)
+app.use((req, res, next) => {
+  res.status(404);
+  const error = new Error(`Route not found - ${req.originalUrl}`);
+  next(error);
+});
+
+// Error Handler (ALWAYS LAST)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
