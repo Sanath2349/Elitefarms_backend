@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import productRoutes from "./routes/ProductRoutes.js";
 import redoc from "redoc-express";
 import errorHandler from "./middleware/errorMiddleware.js";
+import userRoutes from './routes/UserRoutes.js'
 
 dotenv.config();
 
@@ -21,8 +22,10 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is running 🚀" });
 });
 
-// Routes
+// Product Routes
 app.use("/api/products", productRoutes);
+//user Routes
+app.use('/api/users',userRoutes)
 
 // API Docs
 app.get(
